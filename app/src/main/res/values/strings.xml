@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">HW1</string>
+    <string name="logo">logo</string>
+    <string name="crypto_symbol">SYM</string>
+    <string name="crypto_name">CryptoName</string>
+    <string name="pipe">|</string>
+    <string name="price">123$</string>
+    <string name="hourly_tag">1h:</string>
+    <string name="daily_tag">1D:</string>
+    <string name="weakly_tag">7D:</string>
+    <string name="pos_val">+10%</string>
+    <string name="neg_val">-7%</string>
 </resources>

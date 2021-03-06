@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/crypto_logo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitCenter"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/default_crypto_logo"
+            android:contentDescription="@string/logo" />
+
+        <TextView
+            android:id="@+id/crypto_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5pt"
+            android:textStyle="bold"
+            android:text="@string/crypto_symbol"
+            android:layout_toRightOf="@+id/crypto_logo" />
+
+        <TextView
+            android:id="@+id/pipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2pt"
+            android:layout_marginRight="2pt"
+            android:textStyle="bold"
+            android:text="@string/pipe"
+            android:layout_toRightOf="@+id/crypto_symbol" />
+
+        <TextView
+            android:id="@+id/crypto_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/crypto_name"
+            android:layout_toRightOf="@+id/pipe" />
+
+        <TextView
+            android:id="@+id/crypto_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/price"
+            android:layout_alignParentRight="true" />
+
+        <TextView
+            android:id="@+id/hourly_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5pt"
+            android:text="@string/hourly_tag"
+            android:layout_toRightOf="@+id/crypto_logo"
+            android:layout_alignBottom="@+id/crypto_logo" />
+
+        <TextView
+            android:id="@+id/hourly_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2pt"
+            android:text="@string/pos_val"
+            android:textColor="@color/green"
+            android:layout_toRightOf="@+id/hourly_tag"
+            android:layout_alignBottom="@+id/crypto_logo" />
+
+        <TextView
+            android:id="@+id/daily_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5pt"
+            android:text="@string/daily_tag"
+            android:layout_toRightOf="@+id/hourly_change"
+            android:layout_alignBottom="@+id/crypto_logo" />
+
+        <TextView
+            android:id="@+id/daily_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2pt"
+            android:text="@string/neg_val"
+            android:textColor="@color/red"
+            android:layout_toRightOf="@+id/daily_tag"
+            android:layout_alignBottom="@+id/crypto_logo" />
+
+        <TextView
+            android:id="@+id/weekly_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5pt"
+            android:text="@string/weakly_tag"
+            android:layout_toLeftOf="@+id/weekly_change"
+            android:layout_alignBottom="@+id/crypto_logo" />
+
+        <TextView
+            android:id="@+id/weekly_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2pt"
+            android:text="@string/pos_val"
+            android:textColor="@color/green"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/crypto_logo" />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
