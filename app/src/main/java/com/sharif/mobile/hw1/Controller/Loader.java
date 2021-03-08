@@ -1,8 +1,8 @@
 package com.sharif.mobile.hw1.Controller;
 
+import android.os.Message;
 import android.util.Log;
 
-import com.sharif.mobile.hw1.MainActivity;
 import com.sharif.mobile.hw1.Models.Crypto;
 
 import org.json.JSONArray;
@@ -24,11 +24,11 @@ public class Loader {
     private static Loader instance = null;
     private static final String COIN_MARKET_CAP_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
     private static final int MAX_COIN_LOAD_COUNT = 10;
-    private NetworkHandler handler;
-    private AtomicBoolean loading;
+    private CryptoViewHandler handler;
+    private AtomicBoolean busy;
 
     private Loader() {
-
+        this.busy = new AtomicBoolean(false);
     }
 
     public static Loader getInstance() {
@@ -66,18 +66,22 @@ public class Loader {
                 Log.v("LOAD-COINS", "Successful " + response);
 
                 String body = response.body().string();
-                ArrayList<Crypto> new_coins = new ArrayList<>();
+                ArrayList<Crypto> coins = new ArrayList<>();
 
                 try {
                     JSONArray jsonArray = new JSONObject(body).getJSONArray("data");
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject json = jsonArray.getJSONObject(i);
                         Crypto crypto = new Crypto(json);
-                        new_coins.add(crypto);
+                        coins.add(crypto);
                         Log.v("COIN", crypto.toString());
                     }
 
                     // TODO: pass to handler and notify ui thread
+                    Message message = new Message();
+                    message.what = CryptoViewHandler.LOAD_DONE;
+                    message.obj = coins;
+                    handler.sendMessage(message);
 
                 } catch (Exception e) {
                     Log.v("LOAD-COINS", e.getMessage());
@@ -88,4 +92,19 @@ public class Loader {
         return new ArrayList<>();
     }
 
+    public boolean isBusy() {
+        return this.busy.get();
+    }
+
+    public void setFree() {
+        this.busy.set(false);
+    }
+
+    public void setBusy() {
+        this.busy.set(true);
+    }
+
+    public void setHandler(CryptoViewHandler cryptoViewHandler) {
+        this.handler = cryptoViewHandler;
+    }
 }

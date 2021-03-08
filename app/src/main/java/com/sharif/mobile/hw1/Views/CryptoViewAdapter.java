@@ -73,4 +73,12 @@ public class CryptoViewAdapter extends RecyclerView.Adapter<CryptoViewHolder> {
     public int getItemCount() {
         return coins.size();
     }
+
+    public void addAll(ArrayList<Crypto> list) {
+        for (Crypto crypto : list)
+            if (!coins.contains(crypto))
+                coins.add(crypto);
+        notifyDataSetChanged();
+    }
+
 }
