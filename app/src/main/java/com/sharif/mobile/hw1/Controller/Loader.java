@@ -10,6 +10,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import okhttp3.Call;
@@ -25,10 +27,12 @@ public class Loader {
     private static final String COIN_MARKET_CAP_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
     private static final int MAX_COIN_LOAD_COUNT = 10;
     private CryptoViewHandler handler;
-    private AtomicBoolean busy;
+    private AtomicBoolean networkBusy;
+    private ThreadPoolExecutor executor;
 
     private Loader() {
-        this.busy = new AtomicBoolean(false);
+        this.networkBusy = new AtomicBoolean(false);
+        this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
     }
 
     public static Loader getInstance() {
@@ -92,16 +96,20 @@ public class Loader {
         return new ArrayList<>();
     }
 
-    public boolean isBusy() {
-        return this.busy.get();
+    public ThreadPoolExecutor getExecutor() {
+        return executor;
     }
 
-    public void setFree() {
-        this.busy.set(false);
+    public boolean isNetworkBusy() {
+        return this.networkBusy.get();
     }
 
-    public void setBusy() {
-        this.busy.set(true);
+    public void setNetworkFree() {
+        this.networkBusy.set(false);
+    }
+
+    public void setNetworkBusy() {
+        this.networkBusy.set(true);
     }
 
     public void setHandler(CryptoViewHandler cryptoViewHandler) {

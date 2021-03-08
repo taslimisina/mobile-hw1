@@ -28,7 +28,7 @@ public class CryptoViewHandler extends Handler {
     @Override
     public void handleMessage(Message msg) {
 
-        MainActivity cryptoActivity = cryptoActivityWeakReference.get();
+        final MainActivity cryptoActivity = cryptoActivityWeakReference.get();
         if (cryptoActivity == null)
             return;
 
@@ -37,12 +37,17 @@ public class CryptoViewHandler extends Handler {
                 cryptoActivity.progressBar.setVisibility(ProgressBar.GONE);
             cryptoActivity.cryptoViewAdapter.addAll((ArrayList<Crypto>) msg.obj);
             cryptoActivity.swipeContainer.setRefreshing(false);
-            loader.setFree();
+            loader.setNetworkFree();
         } else if (msg.what == LOAD_COINS) {
-            if (loader.isBusy())
+            if (loader.isNetworkBusy())
                 return;
-            loader.setBusy();
-            loader.loadCoins(cryptoActivity.cryptoViewAdapter.getItemCount() + 1);
+            loader.setNetworkBusy();
+            loader.getExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    loader.loadCoins(cryptoActivity.cryptoViewAdapter.getItemCount() + 1);
+                }
+            });
         } else {
             Log.v("HANDLER", "Unknown Message");
         }
