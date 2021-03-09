@@ -14,7 +14,8 @@ import java.util.ArrayList;
 public class CryptoViewHandler extends Handler {
 
     public static final int LOAD_DONE = 0;
-    public static final int LOAD_COINS = 1;
+    public static final int INIT_COINS = 1;
+    public static final int LOAD_MORE_COINS = 2;
 
     private WeakReference<MainActivity> cryptoActivityWeakReference;
     private Loader loader;
@@ -38,7 +39,16 @@ public class CryptoViewHandler extends Handler {
             cryptoActivity.cryptoViewAdapter.addAll((ArrayList<Crypto>) msg.obj);
             cryptoActivity.swipeContainer.setRefreshing(false);
             loader.setNetworkFree();
-        } else if (msg.what == LOAD_COINS) {
+        } else if (msg.what == INIT_COINS) {
+            if (loader.isNetworkBusy())
+                return;
+            loader.setNetworkBusy();
+            cryptoActivity.cryptoViewAdapter.clear();
+            loader.getExecutor().execute(new Runnable() {
+                @Override
+                public void run() { loader.loadCoins(1); }
+            });
+        } else if (msg.what == LOAD_MORE_COINS) {
             if (loader.isNetworkBusy())
                 return;
             loader.setNetworkBusy();

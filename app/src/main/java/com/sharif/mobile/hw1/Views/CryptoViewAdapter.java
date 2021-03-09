@@ -81,4 +81,9 @@ public class CryptoViewAdapter extends RecyclerView.Adapter<CryptoViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        coins.clear();
+        notifyDataSetChanged();
+    }
+
 }

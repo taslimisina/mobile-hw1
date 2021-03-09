@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 //        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 //            @Override
 //            public void onRefresh() {
-//                handler.sendEmptyMessage(CryptoViewHandler.LOAD_COINS);
+//                handler.sendEmptyMessage(CryptoViewHandler.INIT_COINS);
 //            }
 //        });
 //
@@ -67,12 +67,12 @@ public class MainActivity extends AppCompatActivity {
 //                int lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
 //                int visibleThreshold = 1;
 //                if (totalItemCount <= lastVisibleItem + visibleThreshold) {
-//                    handler.sendEmptyMessage(CryptoViewHandler.LOAD_COINS);
+//                    handler.sendEmptyMessage(CryptoViewHandler.LOAD_MORE_COINS);
 //                }
 //            }
 //        });
 //
-//        handler.sendEmptyMessage(CryptoViewHandler.LOAD_COINS);
+//        handler.sendEmptyMessage(CryptoViewHandler.INIT_COINS);
 
     }
 }
