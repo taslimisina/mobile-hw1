@@ -24,7 +24,8 @@ import okhttp3.Response;
 public class Loader {
 
     private static Loader instance = null;
-    private static final String COIN_MARKET_CAP_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
+    private static final String COIN_MARKET_CAP_URL =
+            "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
     private static final int MAX_COIN_LOAD_COUNT = 10;
     private CryptoViewHandler handler;
     private AtomicBoolean networkBusy;

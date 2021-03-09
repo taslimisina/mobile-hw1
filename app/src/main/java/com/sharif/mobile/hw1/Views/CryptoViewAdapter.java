@@ -41,7 +41,6 @@ public class CryptoViewAdapter extends RecyclerView.Adapter<CryptoViewHolder> {
         coins.add(new Crypto("7", "Coin7", "CN7", 777.8,7.7, -2, -7));
         coins.add(new Crypto("8", "Coin8", "CN8", 88,-8.8, 0, 8));
         coins.add(new Crypto("9", "Coin9", "CN9", 99.999,9.9, -2, -9));
-
     }
 
     @NonNull

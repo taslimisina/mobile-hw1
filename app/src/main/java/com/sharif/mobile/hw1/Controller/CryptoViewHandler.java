@@ -4,10 +4,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ProgressBar;
-
 import com.sharif.mobile.hw1.MainActivity;
 import com.sharif.mobile.hw1.Models.Crypto;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 

@@ -11,8 +11,13 @@ import com.sharif.mobile.hw1.R;
 
 public class CryptoViewHolder extends RecyclerView.ViewHolder {
 
-    public ImageView image;
-    public TextView symbol, name, price, hChange, dChange, wChange;
+    public final ImageView image;
+    public final TextView symbol;
+    public final TextView name;
+    public final TextView price;
+    public final TextView hChange;
+    public final TextView dChange;
+    public final TextView wChange;
 
     public CryptoViewHolder(@NonNull View itemView) {
         super(itemView);

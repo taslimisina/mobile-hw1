@@ -6,14 +6,17 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.Locale;
 
 public class Crypto {
-    private String id;
-    private String name;
-    private String symbol;
-    private double price;
-    private double hChange, dChange, wChange;
+    private final String id;
+    private final String name;
+    private final String symbol;
+    private final double price;
+    private final double hChange;
+    private final double dChange;
+    private final double wChange;
     // TODO: save image?
 
     public Crypto(String id, String name, String symbol, double price, double hChange, double dChange, double wChange) {
