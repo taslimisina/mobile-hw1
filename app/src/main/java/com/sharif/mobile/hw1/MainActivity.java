@@ -33,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
         loader.loadCoins(1);
         Log.v("MAIN", "After Load");
 
+        cryptoViewAdapter = new CryptoViewAdapter();  // todo pass list to constructor
+        recyclerView = (RecyclerView)findViewById(R.id.crypto_list);
+        recyclerView.setAdapter(cryptoViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
 //        handler = new CryptoViewHandler(this);
 //
 //        // setup recyclerView
