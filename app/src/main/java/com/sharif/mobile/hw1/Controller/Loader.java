@@ -111,4 +111,11 @@ public class Loader {
     public void setHandler(CryptoViewHandler cryptoViewHandler) {
         this.handler = cryptoViewHandler;
     }
+
+    public void loadMoreCoins() {
+        Message message = new Message();
+        message.what = CryptoViewHandler.LOAD_MORE_COINS;
+        //Todo set message obj -> list of coins
+        handler.handleMessage(message);
+    }
 }
