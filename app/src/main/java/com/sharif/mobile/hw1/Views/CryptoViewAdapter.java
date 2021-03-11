@@ -4,19 +4,15 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sharif.mobile.hw1.Models.Crypto;
 import com.sharif.mobile.hw1.R;
-
 
 public class CryptoViewAdapter extends RecyclerView.Adapter<CryptoViewHolder> {
 

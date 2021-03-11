@@ -1,12 +1,8 @@
 package com.sharif.mobile.hw1.Models;
 
-
 import androidx.annotation.NonNull;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.URL;
 import java.util.Locale;
 
 public class Crypto {
@@ -18,7 +14,8 @@ public class Crypto {
     private final double dChange;
     private final double wChange;
 
-    public Crypto(String id, String name, String symbol, double price, double hChange, double dChange, double wChange) {
+    public Crypto(String id, String name, String symbol, double price, double hChange,
+                  double dChange, double wChange) {
         this.id = id;
         this.name = name;
         this.symbol = symbol;
@@ -51,8 +48,10 @@ public class Crypto {
     @Override
     public String toString() {
         return String.format(Locale.US,
-                "Crypto: id=%s, symbol=%s, name=%s, price=%.2f$, hChange=%.2f%%, dChange=%.2f%%, wChange=%.2f%%,",
-                this.id, this.symbol, this.name, this.price, this.hChange, this.dChange, this.wChange);
+                "Crypto: id=%s, symbol=%s, name=%s, price=%.2f$, hChange=%.2f%%," +
+                        " dChange=%.2f%%, wChange=%.2f%%,",
+                this.id, this.symbol, this.name, this.price, this.hChange, this.dChange,
+                this.wChange);
     }
 
     public String getId() {

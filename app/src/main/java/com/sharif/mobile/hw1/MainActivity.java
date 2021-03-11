@@ -73,6 +73,5 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //
 //        handler.sendEmptyMessage(CryptoViewHandler.INIT_COINS);
-
     }
 }
