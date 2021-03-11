@@ -1,5 +1,6 @@
 package com.sharif.mobile.hw1.Activities;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -29,6 +30,9 @@ public class CandleChartActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.candle_chart_layout);
+
+        Context applicationContext = getApplicationContext();
+        CandleLoader.getInstance().setContext(applicationContext);
         // TODO: handle this during merge
         coinName = "BTC";
 //        coinName = getIntent().getStringExtra("coinName");

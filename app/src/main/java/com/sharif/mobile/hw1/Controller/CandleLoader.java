@@ -1,5 +1,6 @@
 package com.sharif.mobile.hw1.Controller;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
@@ -14,7 +15,12 @@ import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.sharif.mobile.hw1.R;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,14 +32,22 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class CandleLoader {
     private static final CandleLoader INSTANCE = new CandleLoader();
     private static final String API_KEY = "63B57F90-9427-4080-8E86-A9CCC08CB8FB";
+    private static final String CACHE_FORMAT = "%s-%s.json"; // coin name, range
 
     private final OkHttpClient restClient;
+    private WeakReference<Context> context;
 
     private CandleLoader() {
         restClient = new OkHttpClient();
+    }
+
+    public void setContext(Context context) {
+        this.context = new WeakReference<>(context);
     }
 
     public static CandleLoader getInstance() {
@@ -45,6 +59,15 @@ public class CandleLoader {
         final String description;
         String dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .format(new Date(System.currentTimeMillis()));
+        final File cacheFile = new File(String.format(CACHE_FORMAT, symbol, range.toString()));
+        try (FileInputStream inputStream = context.get().openFileInput(cacheFile.getPath())) {
+            String data = getContentOfFile(inputStream);
+            updateChartData(data, symbol, chart);
+        } catch (IOException e) {
+            Log.i("INFO", "cache file doesn't exists.");
+            e.printStackTrace();
+        }
+        // TODO: handle too much refresh requests
         switch (range) {
             case weekly:
                 miniUrl = "period_id=1DAY".
@@ -88,22 +111,39 @@ public class CandleLoader {
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
-                    List<CandleEntry> candleEntries =
-                            extractCandlesFromResponse(response.body().string());
-                    CandleDataSet set = new CandleDataSet(candleEntries, symbol);
-                    set.setColor(Color.rgb(80, 80, 80));
-                    set.setShadowColor(R.color.green);
-                    set.setShadowWidth(0.8f);
-                    set.setDecreasingColor(R.color.red);
-                    set.setDecreasingPaintStyle(Paint.Style.FILL);
-                    set.setIncreasingColor(R.color.colorAccent);
-                    set.setIncreasingPaintStyle(Paint.Style.FILL);
-                    set.setNeutralColor(Color.LTGRAY);
-                    set.setDrawValues(true);
-                    chart.setData(new CandleData(set));
+                    String body = response.body().string();
+                    FileOutputStream fileOutputStream = context.get()
+                            .openFileOutput(cacheFile.getPath(), MODE_PRIVATE);
+                    fileOutputStream.write(body.getBytes());
+                    CandleLoader.this.updateChartData(body, symbol, chart);
                 }
             }
         });
+    }
+
+    private String getContentOfFile(InputStream cacheFile) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        int i=0;
+        while((i=cacheFile.read())!=-1){
+            stringBuilder.append((char) i);
+        }
+        return stringBuilder.toString();
+    }
+
+    private void updateChartData(String data, String symbol, CandleStickChart chart) {
+        List<CandleEntry> candleEntries =
+                extractCandlesFromResponse(data);
+        CandleDataSet set = new CandleDataSet(candleEntries, symbol);
+        set.setColor(Color.rgb(80, 80, 80));
+        set.setShadowColor(R.color.green);
+        set.setShadowWidth(0.8f);
+        set.setDecreasingColor(R.color.red);
+        set.setDecreasingPaintStyle(Paint.Style.FILL);
+        set.setIncreasingColor(R.color.colorAccent);
+        set.setIncreasingPaintStyle(Paint.Style.FILL);
+        set.setNeutralColor(Color.LTGRAY);
+        set.setDrawValues(true);
+        chart.setData(new CandleData(set));
     }
 
     /**
