@@ -1,10 +1,11 @@
 package com.sharif.mobile.hw1.Controller;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,7 +15,6 @@ import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.sharif.mobile.hw1.R;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,33 +32,23 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static android.content.Context.MODE_PRIVATE;
-
 public class CandleLoader {
     private static final CandleLoader INSTANCE = new CandleLoader();
-    private static final String API_KEY = "63B57F90-9427-4080-8E86-A9CCC08CB8FB";
+    private static final String API_KEY = "9BDA1C16-C842-45CC-A533-816FD802D4A8";
     private static final String CACHE_FORMAT = "%s-%s.json"; // coin name, range
 
     private final OkHttpClient restClient;
     private WeakReference<Context> context;
+    private ThreadController threadController;
+    private volatile boolean updateInProgress;
 
     private CandleLoader() {
+        threadController = ThreadController.getInstance();
         restClient = new OkHttpClient();
+        updateInProgress = false;
     }
 
-    public void setContext(Context context) {
-        this.context = new WeakReference<>(context);
-    }
-
-    public static CandleLoader getInstance() {
-        return INSTANCE;
-    }
-
-    public void updateChart(final String symbol, Range range, final CandleStickChart chart) {
-        String miniUrl;
-        final String description;
-        String dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                .format(new Date(System.currentTimeMillis()));
+    public void updateChart(final String symbol, RequestRange range, final CandleStickChart chart) {
         final File cacheFile = new File(String.format(CACHE_FORMAT, symbol, range.toString()));
         try (FileInputStream inputStream = context.get().openFileInput(cacheFile.getPath())) {
             String data = getContentOfFile(inputStream);
@@ -69,26 +59,32 @@ public class CandleLoader {
             Log.i("INFO", "cache file doesn't exists.");
             e.printStackTrace();
         }
-        // TODO: handle too much refresh requests
+        if (!threadController.isPoolFull()) {
+            threadController.submitTask(() -> updateCandleData(symbol, range, chart, cacheFile));
+        }
+        // TODO: show a message when thread pool is full.
+    }
+
+    private synchronized void updateCandleData(final String symbol, RequestRange range, final CandleStickChart chart, final File cacheFile) {
+        updateInProgress = true;
+        String dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .format(new Date(System.currentTimeMillis()));
+        final String miniUrl;
         switch (range) {
             case weekly:
                 miniUrl = "period_id=1DAY".
                         concat("&time_end=".concat(dateTime)
                                 .concat("&limit=7"));
-                description = "Daily candles from now";
                 break;
 
             case oneMonth:
                 miniUrl = "period_id=1DAY"
                         .concat("&time_end=".concat(dateTime)
                                 .concat("&limit=30"));
-                description = "Daily candles from now";
                 break;
 
             default:
                 miniUrl = "";
-                description = "";
-
         }
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse("https://rest.coinapi.io/v1/ohlcv/"
@@ -109,7 +105,6 @@ public class CandleLoader {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
@@ -119,6 +114,7 @@ public class CandleLoader {
                     fileOutputStream.write(body.getBytes());
                     CandleLoader.this.updateChartData(body, symbol, chart);
                 }
+                updateInProgress = false;
             }
         });
     }
@@ -138,6 +134,7 @@ public class CandleLoader {
         if (candleEntries.size() == 0) {
             return;
         }
+        chart.clear();
         CandleDataSet set = new CandleDataSet(candleEntries, symbol);
         set.setColor(Color.rgb(80, 80, 80));
         set.setShadowColor(R.color.green);
@@ -173,9 +170,16 @@ public class CandleLoader {
         return candleEntries;
     }
 
-    public static enum Range {
-        weekly,
-        oneMonth,
+    public void setContext(Context context) {
+        this.context = new WeakReference<>(context);
+    }
+
+    public static CandleLoader getInstance() {
+        return INSTANCE;
+    }
+
+    public boolean isUpdateInProgress() {
+        return updateInProgress;
     }
 
     private static class HistoryData {
