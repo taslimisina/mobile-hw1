@@ -41,22 +41,16 @@ public class CandleLoader {
 
     private final OkHttpClient restClient;
     private WeakReference<Context> context;
+    private ThreadController threadController;
+    private volatile boolean updateInProgress;
 
     private CandleLoader() {
+        threadController = ThreadController.getInstance();
         restClient = new OkHttpClient();
+        updateInProgress = false;
     }
 
-    public void setContext(Context context) {
-        this.context = new WeakReference<>(context);
-    }
-
-    public static CandleLoader getInstance() {
-        return INSTANCE;
-    }
-
-    public void updateChart(final String symbol, Range range, final CandleStickChart chart) {
-        String miniUrl;
-        final String description;
+    public void updateChart(final String symbol, RequestRange range, final CandleStickChart chart) {
         String dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .format(new Date(System.currentTimeMillis()));
         final File cacheFile = new File(String.format(CACHE_FORMAT, symbol, range.toString()));
@@ -69,26 +63,30 @@ public class CandleLoader {
             Log.i("INFO", "cache file doesn't exists.");
             e.printStackTrace();
         }
-        // TODO: handle too much refresh requests
+        if (!threadController.isPoolFull()) {
+            threadController.submitTask(() -> updateCandleData(symbol, range, chart, dateTime,
+                    cacheFile));
+        }
+    }
+
+    private void updateCandleData(final String symbol, RequestRange range, final CandleStickChart chart, String dateTime, final File cacheFile) {
+        updateInProgress = true;
+        final String miniUrl;
         switch (range) {
             case weekly:
                 miniUrl = "period_id=1DAY".
                         concat("&time_end=".concat(dateTime)
                                 .concat("&limit=7"));
-                description = "Daily candles from now";
                 break;
 
             case oneMonth:
                 miniUrl = "period_id=1DAY"
                         .concat("&time_end=".concat(dateTime)
                                 .concat("&limit=30"));
-                description = "Daily candles from now";
                 break;
 
             default:
                 miniUrl = "";
-                description = "";
-
         }
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse("https://rest.coinapi.io/v1/ohlcv/"
@@ -109,7 +107,6 @@ public class CandleLoader {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
@@ -119,6 +116,7 @@ public class CandleLoader {
                     fileOutputStream.write(body.getBytes());
                     CandleLoader.this.updateChartData(body, symbol, chart);
                 }
+                updateInProgress = false;
             }
         });
     }
@@ -173,9 +171,17 @@ public class CandleLoader {
         return candleEntries;
     }
 
-    public static enum Range {
-        weekly,
-        oneMonth,
+
+    public void setContext(Context context) {
+        this.context = new WeakReference<>(context);
+    }
+
+    public static CandleLoader getInstance() {
+        return INSTANCE;
+    }
+
+    public boolean isUpdateInProgress() {
+        return updateInProgress;
     }
 
     private static class HistoryData {

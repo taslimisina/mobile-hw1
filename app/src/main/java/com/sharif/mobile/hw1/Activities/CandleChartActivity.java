@@ -3,7 +3,6 @@ package com.sharif.mobile.hw1.Activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,18 +12,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleDataSet;
-import com.github.mikephil.charting.data.CandleEntry;
 import com.sharif.mobile.hw1.Controller.CandleLoader;
+import com.sharif.mobile.hw1.Controller.RequestRange;
 import com.sharif.mobile.hw1.MainActivity;
 import com.sharif.mobile.hw1.R;
 
-import java.util.ArrayList;
-
 public class CandleChartActivity extends AppCompatActivity {
 
-    private CandleLoader.Range range;
+    private RequestRange range;
     private String coinName;
     private CandleStickChart chart;
 
@@ -36,7 +31,7 @@ public class CandleChartActivity extends AppCompatActivity {
         Context applicationContext = getApplicationContext();
         CandleLoader.getInstance().setContext(applicationContext);
         coinName = getIntent().getStringExtra("coinName");
-        range = CandleLoader.Range.weekly;
+        range = RequestRange.weekly;
         setTitle(coinName + " Candle chart");
 
         chart = findViewById(R.id.chart);
@@ -71,7 +66,7 @@ public class CandleChartActivity extends AppCompatActivity {
         weeklyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                range = CandleLoader.Range.weekly;
+                range = RequestRange.weekly;
                 CandleLoader.getInstance().updateChart(coinName, range, chart);
             }
         });
@@ -79,7 +74,7 @@ public class CandleChartActivity extends AppCompatActivity {
         monthlyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                range = CandleLoader.Range.oneMonth;
+                range = RequestRange.oneMonth;
                 CandleLoader.getInstance().updateChart(coinName, range, chart);
             }
         });
