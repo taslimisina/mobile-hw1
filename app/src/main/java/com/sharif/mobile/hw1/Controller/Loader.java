@@ -115,7 +115,14 @@ public class Loader {
     public void loadMoreCoins() {
         Message message = new Message();
         message.what = CryptoViewHandler.LOAD_MORE_COINS;
-        //Todo set message obj -> list of coins
+        //Todo set message obj -> list of new coins
         handler.handleMessage(message);
+    }
+
+    public void refreshCoins() {
+        Message message = new Message();
+        message.what = CryptoViewHandler.REFRESH_COINS;
+        //Todo set message obj -> list of first coins from network
+        handler.handleMessage(message); //todo set swipeContainer.setRefreshing(false) in handler
     }
 }

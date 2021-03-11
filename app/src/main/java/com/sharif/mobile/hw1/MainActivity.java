@@ -94,5 +94,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Loader.getInstance().refreshCoins();
+            }
+        });
     }
 }

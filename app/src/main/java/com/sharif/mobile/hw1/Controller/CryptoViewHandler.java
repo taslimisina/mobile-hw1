@@ -14,6 +14,7 @@ public class CryptoViewHandler extends Handler {
     public static final int LOAD_DONE = 0;
     public static final int INIT_COINS = 1;
     public static final int LOAD_MORE_COINS = 2;
+    public static final int REFRESH_COINS = 3;
 
     private WeakReference<MainActivity> cryptoActivityWeakReference;
     private Loader loader;
