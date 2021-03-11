@@ -12,6 +12,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sharif.mobile.hw1.Models.Crypto;
 import com.sharif.mobile.hw1.R;
 
@@ -65,7 +67,13 @@ public class CryptoViewAdapter extends RecyclerView.Adapter<CryptoViewHolder> {
         holder.hChange.setText(fmt.format(crypto.getHChange()).concat("%"));
         holder.wChange.setTextColor(crypto.getWChange() > 0 ? Color.GREEN : Color.RED);
 
-        // TODO: load image
+        // TODO: test cache; by default it should also cache images on disc
+        Glide.with(holder.image.getContext())
+                .load("https://s2.coinmarketcap.com/static/img/coins/64x64/" + crypto.getId() + ".png")
+                .circleCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(holder.image);
+
     }
 
     @Override

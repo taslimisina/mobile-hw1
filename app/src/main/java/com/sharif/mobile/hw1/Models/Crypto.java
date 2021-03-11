@@ -17,7 +17,6 @@ public class Crypto {
     private final double hChange;
     private final double dChange;
     private final double wChange;
-    // TODO: save image?
 
     public Crypto(String id, String name, String symbol, double price, double hChange, double dChange, double wChange) {
         this.id = id;
