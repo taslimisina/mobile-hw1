@@ -26,7 +26,8 @@
         app:layout_constraintEnd_toStartOf="@+id/refreshButton"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/chart" />
+        app:layout_constraintTop_toTopOf="@+id/chart"
+        android:onClick="returnToMain"/>
 
     <Button
         android:id="@+id/refreshButton"

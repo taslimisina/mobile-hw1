@@ -1,6 +1,7 @@
 package com.sharif.mobile.hw1.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.sharif.mobile.hw1.Controller.CandleLoader;
+import com.sharif.mobile.hw1.MainActivity;
 import com.sharif.mobile.hw1.R;
 
 import java.util.ArrayList;
@@ -85,5 +87,10 @@ public class CandleChartActivity extends AppCompatActivity {
         });
 
         // TODO: set onclick for return function
+    }
+
+    public void returnToMain(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

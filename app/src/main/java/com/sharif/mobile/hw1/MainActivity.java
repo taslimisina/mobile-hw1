@@ -6,10 +6,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.sharif.mobile.hw1.Activities.CandleChartActivity;
 import com.sharif.mobile.hw1.Controller.CryptoViewHandler;
 import com.sharif.mobile.hw1.Controller.Loader;
 import com.sharif.mobile.hw1.Views.CryptoViewAdapter;
@@ -22,6 +26,12 @@ public class MainActivity extends AppCompatActivity {
 
     private CryptoViewHandler handler;
     private RecyclerView recyclerView;
+
+    public void showCandleChart(View view) {
+        Intent intent = new Intent(this, CandleChartActivity.class);
+        intent.putExtra("coinName", ((TextView)view.findViewById(R.id.crypto_name)).getText());
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

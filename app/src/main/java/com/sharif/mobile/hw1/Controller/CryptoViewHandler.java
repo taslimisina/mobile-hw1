@@ -28,7 +28,7 @@ public class CryptoViewHandler extends Handler {
     public void handleMessage(Message msg) {
 
         final MainActivity cryptoActivity = cryptoActivityWeakReference.get();
-        if (cryptoActivity == null)
+        if (cryptoActivity == null || cryptoActivity.isFinishing())
             return;
 
         if (msg.what == LOAD_DONE) {
