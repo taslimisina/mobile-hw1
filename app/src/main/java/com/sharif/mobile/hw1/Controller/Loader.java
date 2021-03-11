@@ -2,18 +2,14 @@ package com.sharif.mobile.hw1.Controller;
 
 import android.os.Message;
 import android.util.Log;
-
 import com.sharif.mobile.hw1.Models.Crypto;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -82,7 +78,6 @@ public class Loader {
                         Log.v("COIN", crypto.toString());
                     }
 
-                    // TODO: pass to handler and notify ui thread
                     Message message = new Message();
                     message.what = CryptoViewHandler.LOAD_DONE;
                     message.obj = coins;
