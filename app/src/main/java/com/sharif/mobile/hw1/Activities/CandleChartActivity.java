@@ -34,19 +34,33 @@ public class CandleChartActivity extends AppCompatActivity {
         setTitle(coinName + " Candle chart");
 
         chart = findViewById(R.id.chart);
-        chart.setBackgroundColor(Color.BLACK);
+        chart.setBackgroundColor(Color.WHITE);
         chart.setDrawGridBackground(true);
+        chart.setHighlightPerDragEnabled(true);
+        chart.setDrawBorders(true);
+        chart.setBorderColor(getResources().getColor(R.color.colorAccent));
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(true);
         YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setLabelCount(7, false);
         leftAxis.setDrawGridLines(true);
         leftAxis.setDrawAxisLine(true);
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setEnabled(true);
-        chart.getLegend().setEnabled(false);
+        chart.getLegend().setEnabled(true);
+        YAxis yAxis = chart.getAxisLeft();
+        yAxis.setDrawGridLines(false);
+        rightAxis.setDrawGridLines(false);
+        chart.requestDisallowInterceptTouchEvent(true);
+        xAxis.setDrawLabels(true);
+        rightAxis.setTextColor(Color.BLACK);
+        yAxis.setDrawLabels(true);
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setEnabled(true);
+        chart.setClipValuesToContent(true);
+        xAxis.setAvoidFirstLastClipping(true);
 
         CandleLoader.getInstance().updateChart(coinName, range, chart);
 
@@ -54,7 +68,6 @@ public class CandleChartActivity extends AppCompatActivity {
         Button returnButton = findViewById(R.id.returnButton);
         Button weeklyButton = findViewById(R.id.weekly);
         Button monthlyButton = findViewById(R.id.monthly);
-
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

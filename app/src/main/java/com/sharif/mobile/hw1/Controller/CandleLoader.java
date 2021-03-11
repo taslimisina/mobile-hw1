@@ -136,16 +136,18 @@ public class CandleLoader {
         }
         chart.clear();
         CandleDataSet set = new CandleDataSet(candleEntries, symbol);
+
         set.setColor(Color.rgb(80, 80, 80));
-        set.setShadowColor(R.color.green);
-        set.setShadowWidth(0.8f);
-        set.setDecreasingColor(R.color.red);
+        set.setShadowColor(Color.DKGRAY);
+        set.setShadowWidth(1f);
+        set.setDecreasingColor(context.get().getResources().getColor(R.color.green));
         set.setDecreasingPaintStyle(Paint.Style.FILL);
-        set.setIncreasingColor(R.color.colorAccent);
+        set.setIncreasingColor(context.get().getResources().getColor(R.color.red));
         set.setIncreasingPaintStyle(Paint.Style.FILL);
         set.setNeutralColor(Color.LTGRAY);
         set.setDrawValues(true);
         chart.setData(new CandleData(set));
+        chart.invalidate();
     }
 
     /**
