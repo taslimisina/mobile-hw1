@@ -62,7 +62,9 @@ public class CandleLoader {
         final File cacheFile = new File(String.format(CACHE_FORMAT, symbol, range.toString()));
         try (FileInputStream inputStream = context.get().openFileInput(cacheFile.getPath())) {
             String data = getContentOfFile(inputStream);
-            updateChartData(data, symbol, chart);
+            if (!data.isEmpty()) {
+                updateChartData(data, symbol, chart);
+            }
         } catch (IOException e) {
             Log.i("INFO", "cache file doesn't exists.");
             e.printStackTrace();
@@ -133,6 +135,9 @@ public class CandleLoader {
     private void updateChartData(String data, String symbol, CandleStickChart chart) {
         List<CandleEntry> candleEntries =
                 extractCandlesFromResponse(data);
+        if (candleEntries.size() == 0) {
+            return;
+        }
         CandleDataSet set = new CandleDataSet(candleEntries, symbol);
         set.setColor(Color.rgb(80, 80, 80));
         set.setShadowColor(R.color.green);

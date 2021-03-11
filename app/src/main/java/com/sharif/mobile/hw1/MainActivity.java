@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void showCandleChart(View view) {
         Intent intent = new Intent(this, CandleChartActivity.class);
-        intent.putExtra("coinName", ((TextView)view.findViewById(R.id.crypto_name)).getText());
+        intent.putExtra("coinName", ((TextView)view.findViewById(R.id.crypto_symbol)).getText());
         startActivity(intent);
     }
 

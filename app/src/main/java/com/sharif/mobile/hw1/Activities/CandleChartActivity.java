@@ -35,9 +35,7 @@ public class CandleChartActivity extends AppCompatActivity {
 
         Context applicationContext = getApplicationContext();
         CandleLoader.getInstance().setContext(applicationContext);
-        // TODO: handle this during merge
-        coinName = "BTC";
-//        coinName = getIntent().getStringExtra("coinName");
+        coinName = getIntent().getStringExtra("coinName");
         range = CandleLoader.Range.weekly;
         setTitle(coinName + " Candle chart");
 
@@ -85,8 +83,6 @@ public class CandleChartActivity extends AppCompatActivity {
                 CandleLoader.getInstance().updateChart(coinName, range, chart);
             }
         });
-
-        // TODO: set onclick for return function
     }
 
     public void returnToMain(View view) {
