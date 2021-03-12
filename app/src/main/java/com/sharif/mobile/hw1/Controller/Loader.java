@@ -5,6 +5,7 @@ import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.dynamicanimation.animation.SpringAnimation;
 
 import com.sharif.mobile.hw1.Models.Crypto;
 import org.json.JSONArray;
@@ -116,9 +117,10 @@ public class Loader {
     }
 
     private void loadFromCache(int start) {
+        Log.v("LOADER", "Loading 1 from cache, start=" + start);
         if (context == null)
             return;
-
+        Log.v("LOADER", "Loading 2 from cache, start=" + start);
         final File cacheFile = new File(String.format(CACHE_FORMAT, start));
         try {
             FileInputStream inputStream = context.get().openFileInput(cacheFile.getPath());
@@ -136,9 +138,11 @@ public class Loader {
             message.obj = coins;
             handler.sendMessage(message);
         } catch (Exception e) {
-            Log.i("LOAD-CACHE", e.getMessage());
-            e.printStackTrace();
-            this.setFree();
+            Log.v("LOAD-CACHE", "No Network - No more cached data");
+            Message message = new Message();
+            message.what = CryptoViewHandler.TOAST;
+            message.obj = "Network unavailable. Please check your connection";
+            handler.sendMessage(message);
         }
     }
 
@@ -157,9 +161,12 @@ public class Loader {
     }
 
     public void loadMoreCoins(int start) {
+        Log.v("LOADER", "load more");
         if (NetworkUtil.isConnected(context.get())) {
+            Log.v("LOADER", "load more form network");
             loadFromNetwork(start);
         } else {
+            Log.v("LOADER", "load more form cache");
             loadFromCache(start);
         }
     }
@@ -169,8 +176,10 @@ public class Loader {
             loadFromNetwork(1);
         } else {
             Log.v("REFRESH", "No Network");
-            // todo: show network warning
-            this.setFree();
+            Message message = new Message();
+            message.what = CryptoViewHandler.TOAST;
+            message.obj = "Network unavailable. Please check your connection";
+            handler.sendMessage(message);
         }
     }
 
