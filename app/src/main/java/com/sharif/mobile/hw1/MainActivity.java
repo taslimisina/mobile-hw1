@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(() -> {
             if (loader.isBusy()) {
-                Log.d("Main", "loader is busy");
+                Log.d(MainActivity.TAG, "loader is busy");
                 swipeContainer.setRefreshing(false);
                 return;
             }

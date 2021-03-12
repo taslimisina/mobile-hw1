@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,14 +36,15 @@ import okhttp3.Response;
 
 public class CandleLoader {
     private static final CandleLoader INSTANCE = new CandleLoader();
-    private static final String API_KEY = "9BDA1C16-C842-45CC-A533-816FD802D4A8";
+//    private static final String API_KEY = "9BDA1C16-C842-45CC-A533-816FD802D4A8";
+    private static final String API_KEY = "35F5860C-3A21-44AF-BD16-F2EED43EEEAB";
     private static final String CACHE_FORMAT = "%s-%s.json"; // coin name, range
 
     private final OkHttpClient restClient;
     private WeakReference<Context> context;
     private ThreadController threadController;
     private volatile boolean updateInProgress;
-    private CandleChartToastHandler handler;
+    private CandleChartHandler handler;
 
     private CandleLoader() {
         threadController = ThreadController.getInstance();
@@ -71,6 +71,12 @@ public class CandleLoader {
 
     private synchronized void updateCandleData(final String symbol, RequestRange range, final CandleStickChart chart, final File cacheFile) {
         updateInProgress = true;
+
+        Message message = new Message();
+        message.what = CandleChartHandler.SET_PROGRESS;
+        message.obj = 0.4f;
+        handler.sendMessage(message);
+
         String dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .format(new Date(System.currentTimeMillis()));
         final String miniUrl;
@@ -101,12 +107,20 @@ public class CandleLoader {
                 .addHeader("X-CoinAPI-Key", API_KEY)
                 .build();
 
+        message = new Message();
+        message.what = CandleChartHandler.SET_PROGRESS;
+        message.obj = 0.6f;
+        handler.sendMessage(message);
+
         restClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Message message = new Message();
-                message.what = CandleChartToastHandler.TOAST;
+                message.what = CandleChartHandler.TOAST;
                 message.obj = "request failed!, please check your connection.";
+                handler.sendMessage(message);
+                message = new Message();
+                message.what = CandleChartHandler.PROGRESS_DONE;
                 handler.sendMessage(message);
                 Log.v("TAG", e.getMessage());
             }
@@ -115,16 +129,32 @@ public class CandleLoader {
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Message message = new Message();
-                    message.what = CandleChartToastHandler.TOAST;
+                    message.what = CandleChartHandler.TOAST;
                     message.obj = "request failed, please try again!";
+                    handler.sendMessage(message);
+                    message = new Message();
+                    message.what = CandleChartHandler.PROGRESS_DONE;
                     handler.sendMessage(message);
                     throw new IOException("Unexpected code " + response);
                 } else {
+                    Message message = new Message();
+                    message.what = CandleChartHandler.SET_PROGRESS;
+                    message.obj = 0.8f;
+                    handler.sendMessage(message);
+
                     String body = response.body().string();
                     FileOutputStream fileOutputStream = context.get()
                             .openFileOutput(cacheFile.getPath(), MODE_PRIVATE);
                     fileOutputStream.write(body.getBytes());
                     CandleLoader.this.updateChartData(body, symbol, chart);
+
+                    message = new Message();
+                    message.what = CandleChartHandler.SET_PROGRESS;
+                    message.obj = 1f;
+                    handler.sendMessage(message);
+                    message = new Message();
+                    message.what = CandleChartHandler.PROGRESS_DONE;
+                    handler.sendMessage(message);
                 }
                 updateInProgress = false;
             }
@@ -143,7 +173,7 @@ public class CandleLoader {
     private void updateChartData(String data, String symbol, CandleStickChart chart) {
         List<CandleEntry> candleEntries =
                 extractCandlesFromResponse(data);
-        if (candleEntries != null && candleEntries.isEmpty()) {
+        if (candleEntries == null || candleEntries.isEmpty()) {
             return;
         }
         chart.clear();
@@ -196,7 +226,7 @@ public class CandleLoader {
         return updateInProgress;
     }
 
-    public void setHandler(CandleChartToastHandler handler) {
+    public void setHandler(CandleChartHandler handler) {
         this.handler = handler;
     }
 

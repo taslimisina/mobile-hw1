@@ -6,12 +6,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.sharif.mobile.hw1.Controller.CandleChartToastHandler;
+import com.sharif.mobile.hw1.Controller.CandleChartHandler;
 import com.sharif.mobile.hw1.Controller.CandleLoader;
 import com.sharif.mobile.hw1.Controller.RequestRange;
 import com.sharif.mobile.hw1.MainActivity;
@@ -22,6 +24,7 @@ public class CandleChartActivity extends AppCompatActivity {
     private RequestRange range;
     private String coinName;
     private CandleStickChart chart;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,10 +33,11 @@ public class CandleChartActivity extends AppCompatActivity {
 
         Context applicationContext = getApplicationContext();
         CandleLoader.getInstance().setContext(applicationContext);
-        CandleLoader.getInstance().setHandler(new CandleChartToastHandler(this));
+        CandleLoader.getInstance().setHandler(new CandleChartHandler(this));
         coinName = getIntent().getStringExtra("coinName");
         range = RequestRange.weekly;
         setTitle(coinName + " Candle chart");
+        progressBar = (ProgressBar) findViewById(R.id.candleProgressBar);
 
         chart = findViewById(R.id.chart);
         chart.setBackgroundColor(Color.WHITE);
@@ -97,5 +101,9 @@ public class CandleChartActivity extends AppCompatActivity {
     public void returnToMain(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    public ProgressBar getProgressBar() {
+        return progressBar;
     }
 }
