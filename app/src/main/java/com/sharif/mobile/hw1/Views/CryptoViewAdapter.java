@@ -42,11 +42,11 @@ public class CryptoViewAdapter extends RecyclerView.Adapter<CryptoViewHolder> {
         holder.name.setText(crypto.getName());
         holder.price.setText(String.format(Locale.getDefault(),"%.02f$", crypto.getPrice()));
 
-        holder.hChange.setText(fmt.format(crypto.getHChange()).concat("$"));
+        holder.hChange.setText(fmt.format(crypto.getHChange()).concat("%"));
         holder.hChange.setTextColor(crypto.getHChange() > 0 ? Color.GREEN : Color.RED);
-        holder.hChange.setText(fmt.format(crypto.getHChange()).concat("%"));
+        holder.dChange.setText(fmt.format(crypto.getDChange()).concat("%"));
         holder.dChange.setTextColor(crypto.getDChange() > 0 ? Color.GREEN : Color.RED);
-        holder.hChange.setText(fmt.format(crypto.getHChange()).concat("%"));
+        holder.wChange.setText(fmt.format(crypto.getWChange()).concat("%"));
         holder.wChange.setTextColor(crypto.getWChange() > 0 ? Color.GREEN : Color.RED);
 
         // TODO: test cache; by default it should also cache images on disc
