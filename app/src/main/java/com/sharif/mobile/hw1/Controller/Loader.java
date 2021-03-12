@@ -5,6 +5,7 @@ import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.dynamicanimation.animation.SpringAnimation;
 
 import com.sharif.mobile.hw1.Models.Crypto;
 import org.json.JSONArray;
@@ -34,6 +35,7 @@ public class Loader {
     private static final String COIN_MARKET_CAP_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest";
     private static final int MAX_COIN_LOAD_COUNT = 10;
     private static final String CACHE_FORMAT = "price-cache-%s.json";
+    private static final String TAG = "Loader";
     private final ThreadController threadController;
     private final AtomicBoolean busy;
     private WeakReference<Context> context;
@@ -77,7 +79,7 @@ public class Loader {
                 message.what = CryptoViewHandler.TOAST;
                 message.obj = "request failed!, please check your connection.";
                 handler.sendMessage(message);
-                Log.v("LOAD-COINS", e.getMessage());
+                Log.i(Loader.TAG, "LoadFromNetwork failed: " + e.getMessage());
             }
 
             @Override
@@ -94,7 +96,7 @@ public class Loader {
                     handler.sendMessage(message);
                     throw new IOException("Unsuccessful " + response);
                 }
-                Log.v("LOAD-COINS", "Successful " + response);
+                Log.i(Loader.TAG, "Successful load, start=" + start);
 
                 try {
                     String body = response.body().string();
@@ -109,13 +111,14 @@ public class Loader {
                         threadController.submitTask(() -> updateCache(body, start));
                     }
                 } catch (Exception e) {
-                    Log.v("LOAD-COINS", e.getMessage());
+                    Log.e(Loader.TAG, "Request parse failed: " + e.getMessage());
                 }
             }
         });
     }
 
     private void loadFromCache(int start) {
+
         if (context == null)
             return;
 
@@ -136,9 +139,11 @@ public class Loader {
             message.obj = coins;
             handler.sendMessage(message);
         } catch (Exception e) {
-            Log.i("LOAD-CACHE", e.getMessage());
-            e.printStackTrace();
-            this.setFree();
+            Log.i(Loader.TAG, "No Network - No more cached data");
+            Message message = new Message();
+            message.what = CryptoViewHandler.TOAST;
+            message.obj = "Network unavailable. Please check your connection.";
+            handler.sendMessage(message);
         }
     }
 
@@ -152,14 +157,16 @@ public class Loader {
             fileOutputStream = context.get().openFileOutput(cacheFile.getPath(), MODE_PRIVATE);
             fileOutputStream.write(body.getBytes());
         } catch (Exception e) {
-            Log.v("UPDATE-CACHE", e.getMessage());
+            Log.e(Loader.TAG, "Update cache failed: " + e.getMessage());
         }
     }
 
     public void loadMoreCoins(int start) {
         if (NetworkUtil.isConnected(context.get())) {
+            Log.v(Loader.TAG, "Load more form network");
             loadFromNetwork(start);
         } else {
+            Log.v(Loader.TAG, "Load more form cache");
             loadFromCache(start);
         }
     }
@@ -168,9 +175,11 @@ public class Loader {
         if (NetworkUtil.isConnected(context.get())) {
             loadFromNetwork(1);
         } else {
-            Log.v("REFRESH", "No Network");
-            // todo: show network warning
-            this.setFree();
+            Log.v(Loader.TAG, "Refresh: No Network");
+            Message message = new Message();
+            message.what = CryptoViewHandler.TOAST;
+            message.obj = "Network unavailable. Please check your connection.";
+            handler.sendMessage(message);
         }
     }
 

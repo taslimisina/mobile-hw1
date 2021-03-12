@@ -51,12 +51,15 @@ public class CryptoViewHandler extends Handler {
                 loader.setFree();
                 break;
             case TOAST:
+                progressBar.setVisibility(ProgressBar.GONE);
+                cryptoActivity.swipeContainer.setRefreshing(false);
                 String text = (String) msg.obj;
                 Toast.makeText(cryptoActivity.getApplicationContext(), text, Toast.LENGTH_LONG)
                         .show();
+                loader.setFree();
                 break;
             default:
-                Log.v("HANDLER", "Unknown Message");
+                Log.e("Handler", "Unknown Message");
                 break;
         }
     }

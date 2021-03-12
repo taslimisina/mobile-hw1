@@ -23,6 +23,7 @@ import com.sharif.mobile.hw1.Views.CryptoViewAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = "Main";
     public ProgressBar progressBar;
     public CryptoViewAdapter cryptoViewAdapter;
     public SwipeRefreshLayout swipeContainer;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                     if (loader.isBusy())
                         return;
                     loader.setBusy();
-                    Log.v("Main", "Load More Coins");
+                    Log.v(MainActivity.TAG, "Load More Coins");
                     progressBar.setVisibility(ProgressBar.VISIBLE);
                     progressBar.setProgress(progressBar.getMax() * 3/10);
                     ThreadController.getInstance().submitTask(() -> loader.loadMoreCoins(cryptoViewAdapter.getItemCount() + 1));
@@ -77,14 +78,14 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             loader.setBusy();
-            Log.v("Main", "Refresh");
+            Log.v(MainActivity.TAG, "Refresh");
             progressBar.setVisibility(ProgressBar.VISIBLE);
             progressBar.setProgress(progressBar.getMax() * 3/10);
             ThreadController.getInstance().submitTask(() -> loader.refreshCoins());
         });
 
         if (loader.isBusy())
-            Log.v("BUSY!", "***********************************************");
+            Log.e(MainActivity.TAG, "BUSY!!!!!!");
         loader.setBusy();
         progressBar.setVisibility(ProgressBar.VISIBLE);
         progressBar.setProgress(progressBar.getMax() * 3/10);
