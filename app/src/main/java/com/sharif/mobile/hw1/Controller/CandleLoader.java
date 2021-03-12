@@ -176,7 +176,6 @@ public class CandleLoader {
         if (candleEntries == null || candleEntries.isEmpty()) {
             return;
         }
-        chart.clear();
         CandleDataSet set = new CandleDataSet(candleEntries, symbol);
 
         set.setColor(Color.rgb(80, 80, 80));
@@ -189,7 +188,10 @@ public class CandleLoader {
         set.setNeutralColor(Color.LTGRAY);
         set.setDrawValues(true);
         chart.setData(new CandleData(set));
-        chart.invalidate();
+        Message message = Message.obtain();
+        message.what = CandleChartHandler.INVALIDAT_CHART;
+        message.obj = chart;
+        handler.sendMessage(message);
     }
 
     /**
