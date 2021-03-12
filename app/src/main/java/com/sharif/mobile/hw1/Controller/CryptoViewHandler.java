@@ -22,7 +22,6 @@ public class CryptoViewHandler extends Handler {
     public CryptoViewHandler(MainActivity cryptoActivity) {
         this.cryptoActivityWeakReference = new WeakReference<>(cryptoActivity);
         this.loader = Loader.getInstance();
-        this.loader.setHandler(this);
     }
 
     @Override
@@ -33,30 +32,17 @@ public class CryptoViewHandler extends Handler {
             return;
 
         if (msg.what == LOAD_DONE) {
-            if (cryptoActivity.progressBar.getVisibility() == ProgressBar.VISIBLE)
-                cryptoActivity.progressBar.setVisibility(ProgressBar.GONE);
+            // todo: handle progressBar
+//            if (cryptoActivity.progressBar.getVisibility() == ProgressBar.VISIBLE)
+//                cryptoActivity.progressBar.setVisibility(ProgressBar.GONE);
+
+            if (cryptoActivity.swipeContainer.isRefreshing()) // todo: check!!
+                cryptoActivity.cryptoViewAdapter.clear();
+
             cryptoActivity.cryptoViewAdapter.addAll((ArrayList<Crypto>) msg.obj);
             cryptoActivity.swipeContainer.setRefreshing(false);
-            loader.setNetworkFree();
-        } else if (msg.what == INIT_COINS) {
-            if (loader.isNetworkBusy())
-                return;
-            loader.setNetworkBusy();
-            cryptoActivity.cryptoViewAdapter.clear();
-            loader.getExecutor().execute(new Runnable() {
-                @Override
-                public void run() { loader.loadCoins(1); }
-            });
-        } else if (msg.what == LOAD_MORE_COINS) {
-            if (loader.isNetworkBusy())
-                return;
-            loader.setNetworkBusy();
-            loader.getExecutor().execute(new Runnable() {
-                @Override
-                public void run() {
-                    loader.loadCoins(cryptoActivity.cryptoViewAdapter.getItemCount() + 1);
-                }
-            });
+            loader.setFree();
+
         } else {
             Log.v("HANDLER", "Unknown Message");
         }

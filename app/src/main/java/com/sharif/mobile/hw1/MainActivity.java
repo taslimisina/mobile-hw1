@@ -8,6 +8,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 import com.sharif.mobile.hw1.Activities.CandleChartActivity;
 import com.sharif.mobile.hw1.Controller.CryptoViewHandler;
 import com.sharif.mobile.hw1.Controller.Loader;
+import com.sharif.mobile.hw1.Controller.ThreadController;
+import com.sharif.mobile.hw1.Models.Crypto;
 import com.sharif.mobile.hw1.Views.CryptoViewAdapter;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
 //    private CryptoViewHandler handler;
     private RecyclerView recyclerView;
+    private Loader loader;
 
     public void showCandleChart(View view) {
         Intent intent = new Intent(this, CandleChartActivity.class);
@@ -38,69 +42,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.v("MAIN", "Starting MainActivity");
-        Loader loader = Loader.getInstance();
-        loader.loadCoins(1);
-        Log.v("MAIN", "After Load");
-
         cryptoViewAdapter = new CryptoViewAdapter();  // todo pass list to constructor
         recyclerView = (RecyclerView)findViewById(R.id.crypto_list);
         recyclerView.setAdapter(cryptoViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(false);
 
+        loader = Loader.getInstance();
+        loader.setContext(this);
+        loader.setHandler(new CryptoViewHandler(this));
 
-//        handler = new CryptoViewHandler(this);
-//
-//        // setup recyclerView
-//        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        cryptoViewAdapter = new CryptoViewAdapter();
-//        recyclerView.setAdapter(cryptoViewAdapter);
-//        recyclerView.setHasFixedSize(false);
-//
-//        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-//        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-//
-//        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                handler.sendEmptyMessage(CryptoViewHandler.INIT_COINS);
-//            }
-//        });
-//
-//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                int totalItemCount = recyclerView.getLayoutManager().getItemCount();
-//                int lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-//                int visibleThreshold = 1;
-//                if (totalItemCount <= lastVisibleItem + visibleThreshold) {
-//                    handler.sendEmptyMessage(CryptoViewHandler.LOAD_MORE_COINS);
-//                }
-//            }
-//        });
-//
-//        handler.sendEmptyMessage(CryptoViewHandler.INIT_COINS);
+        // TODO: setup progressbar
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (!recyclerView.canScrollVertically(1)) {
+                    if (loader.isBusy())
+                        return;
+                    loader.setBusy();
                     Log.v("Main", "Load More Coins");
-                    Loader.getInstance().loadMoreCoins();
+                    ThreadController.getInstance().submitTask(() -> loader.loadMoreCoins(cryptoViewAdapter.getItemCount() + 1));
                 }
             }
         });
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Loader.getInstance().refreshCoins();
-            }
+        swipeContainer.setOnRefreshListener(() -> {
+            if (loader.isBusy())
+                return;
+            loader.setBusy();
+            Log.v("Main", "Refresh");
+            ThreadController.getInstance().submitTask(() -> loader.refreshCoins());
         });
+
+        if (loader.isBusy())
+            Log.v("BUSY!", "***********************************************");
+        loader.setBusy();
+        ThreadController.getInstance().submitTask(() -> loader.loadMoreCoins(1));
     }
 }
