@@ -73,6 +73,10 @@ public class Loader {
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Message message = new Message();
+                message.what = CandleChartToastHandler.TOAST;
+                message.obj = "request failed!, please check your connection.";
+                handler.sendMessage(message);
                 Log.v("LOAD-COINS", e.getMessage());
             }
 
@@ -83,8 +87,13 @@ public class Loader {
                 message.obj = 0.8f;
                 handler.sendMessage(message);
 
-                if (! response.isSuccessful())
+                if (! response.isSuccessful()) {
+                    message = new Message();
+                    message.what = CandleChartToastHandler.TOAST;
+                    message.obj = "request failed, please try again!";
+                    handler.sendMessage(message);
                     throw new IOException("Unsuccessful " + response);
+                }
                 Log.v("LOAD-COINS", "Successful " + response);
 
                 try {

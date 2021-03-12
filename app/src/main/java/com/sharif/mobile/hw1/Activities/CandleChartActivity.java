@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.sharif.mobile.hw1.Controller.CandleChartToastHandler;
 import com.sharif.mobile.hw1.Controller.CandleLoader;
 import com.sharif.mobile.hw1.Controller.RequestRange;
 import com.sharif.mobile.hw1.MainActivity;
@@ -29,6 +30,7 @@ public class CandleChartActivity extends AppCompatActivity {
 
         Context applicationContext = getApplicationContext();
         CandleLoader.getInstance().setContext(applicationContext);
+        CandleLoader.getInstance().setHandler(new CandleChartToastHandler(this));
         coinName = getIntent().getStringExtra("coinName");
         range = RequestRange.weekly;
         setTitle(coinName + " Candle chart");

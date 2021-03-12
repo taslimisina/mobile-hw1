@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
 import com.sharif.mobile.hw1.MainActivity;
 import com.sharif.mobile.hw1.Models.Crypto;
 import java.lang.ref.WeakReference;
@@ -14,6 +16,7 @@ public class CryptoViewHandler extends Handler {
     public static final int LOAD_DONE = 0;
     public static final int SET_PROGRESS = 1;
     public static final int REFRESH_DONE = 2;
+    public static final int TOAST = 4;
 
     private WeakReference<MainActivity> cryptoActivityWeakReference;
     private Loader loader;
@@ -30,22 +33,31 @@ public class CryptoViewHandler extends Handler {
             return;
 
         ProgressBar progressBar = cryptoActivity.progressBar;
-        if (msg.what == LOAD_DONE) {
-            cryptoActivity.cryptoViewAdapter.addAll((ArrayList<Crypto>) msg.obj);
-            progressBar.setVisibility(ProgressBar.GONE);
-            loader.setFree();
-        }
-        else if (msg.what == SET_PROGRESS) {
-            progressBar.setProgress((int)((float)msg.obj * progressBar.getMax()));
-        } else if (msg.what == REFRESH_DONE) {
-            progressBar.setProgress(progressBar.getMax());
-            cryptoActivity.cryptoViewAdapter.clear();
-            cryptoActivity.swipeContainer.setRefreshing(false);
-            cryptoActivity.cryptoViewAdapter.addAll((ArrayList<Crypto>) msg.obj);
-            progressBar.setVisibility(ProgressBar.GONE);
-            loader.setFree();
-        } else {
-            Log.v("HANDLER", "Unknown Message");
+        switch (msg.what) {
+            case LOAD_DONE:
+                cryptoActivity.cryptoViewAdapter.addAll((ArrayList<Crypto>) msg.obj);
+                progressBar.setVisibility(ProgressBar.GONE);
+                loader.setFree();
+                break;
+            case SET_PROGRESS:
+                progressBar.setProgress((int)((float)msg.obj * progressBar.getMax()));
+                break;
+            case REFRESH_DONE:
+                progressBar.setProgress(progressBar.getMax());
+                cryptoActivity.cryptoViewAdapter.clear();
+                cryptoActivity.swipeContainer.setRefreshing(false);
+                cryptoActivity.cryptoViewAdapter.addAll((ArrayList<Crypto>) msg.obj);
+                progressBar.setVisibility(ProgressBar.GONE);
+                loader.setFree();
+                break;
+            case TOAST:
+                String text = (String) msg.obj;
+                Toast.makeText(cryptoActivity.getApplicationContext(), text, Toast.LENGTH_LONG)
+                        .show();
+                break;
+            default:
+                Log.v("HANDLER", "Unknown Message");
+                break;
         }
     }
 }

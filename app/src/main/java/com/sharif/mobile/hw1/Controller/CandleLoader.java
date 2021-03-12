@@ -5,7 +5,10 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -41,6 +44,7 @@ public class CandleLoader {
     private WeakReference<Context> context;
     private ThreadController threadController;
     private volatile boolean updateInProgress;
+    private CandleChartToastHandler handler;
 
     private CandleLoader() {
         threadController = ThreadController.getInstance();
@@ -100,12 +104,20 @@ public class CandleLoader {
         restClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Message message = new Message();
+                message.what = CandleChartToastHandler.TOAST;
+                message.obj = "request failed!, please check your connection.";
+                handler.sendMessage(message);
                 Log.v("TAG", e.getMessage());
             }
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
+                    Message message = new Message();
+                    message.what = CandleChartToastHandler.TOAST;
+                    message.obj = "request failed, please try again!";
+                    handler.sendMessage(message);
                     throw new IOException("Unexpected code " + response);
                 } else {
                     String body = response.body().string();
@@ -131,7 +143,7 @@ public class CandleLoader {
     private void updateChartData(String data, String symbol, CandleStickChart chart) {
         List<CandleEntry> candleEntries =
                 extractCandlesFromResponse(data);
-        if (candleEntries.size() == 0) {
+        if (candleEntries != null && candleEntries.isEmpty()) {
             return;
         }
         chart.clear();
@@ -182,6 +194,10 @@ public class CandleLoader {
 
     public boolean isUpdateInProgress() {
         return updateInProgress;
+    }
+
+    public void setHandler(CandleChartToastHandler handler) {
+        this.handler = handler;
     }
 
     private static class HistoryData {
