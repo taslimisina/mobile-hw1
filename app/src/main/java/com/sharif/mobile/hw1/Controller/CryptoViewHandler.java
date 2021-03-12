@@ -59,7 +59,7 @@ public class CryptoViewHandler extends Handler {
                 loader.setFree();
                 break;
             default:
-                Log.v("HANDLER", "Unknown Message");
+                Log.e("Handler", "Unknown Message");
                 break;
         }
     }
