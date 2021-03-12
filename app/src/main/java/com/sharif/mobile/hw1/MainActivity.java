@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     public CryptoViewAdapter cryptoViewAdapter;
     public SwipeRefreshLayout swipeContainer;
 
-//    private CryptoViewHandler handler;
     private RecyclerView recyclerView;
     private Loader loader;
 
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cryptoViewAdapter = new CryptoViewAdapter();  // todo pass list to constructor
+        cryptoViewAdapter = new CryptoViewAdapter();
         recyclerView = (RecyclerView)findViewById(R.id.crypto_list);
         recyclerView.setAdapter(cryptoViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         loader.setContext(this);
         loader.setHandler(new CryptoViewHandler(this));
 
-        // TODO: setup progressbar
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -63,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     loader.setBusy();
                     Log.v("Main", "Load More Coins");
+                    progressBar.setVisibility(ProgressBar.VISIBLE);
+                    progressBar.setProgress(progressBar.getMax() * 3/10);
                     ThreadController.getInstance().submitTask(() -> loader.loadMoreCoins(cryptoViewAdapter.getItemCount() + 1));
                 }
             }
@@ -74,12 +75,16 @@ public class MainActivity extends AppCompatActivity {
                 return;
             loader.setBusy();
             Log.v("Main", "Refresh");
+            progressBar.setVisibility(ProgressBar.VISIBLE);
+            progressBar.setProgress(progressBar.getMax() * 3/10);
             ThreadController.getInstance().submitTask(() -> loader.refreshCoins());
         });
 
         if (loader.isBusy())
             Log.v("BUSY!", "***********************************************");
         loader.setBusy();
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        progressBar.setProgress(progressBar.getMax() * 3/10);
         ThreadController.getInstance().submitTask(() -> loader.loadMoreCoins(1));
     }
 }

@@ -31,7 +31,6 @@ public class CryptoViewAdapter extends RecyclerView.Adapter<CryptoViewHolder> {
     @Override
     public CryptoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.crypto_layout, parent,false);
-        // TODO: setOnClickListener -> opens candle-chart-view
         return new CryptoViewHolder(view);
     }
 

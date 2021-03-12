@@ -64,6 +64,11 @@ public class Loader {
                 .addHeader("X-CMC_PRO_API_KEY", "98193a8b-6323-46c1-87d9-dcd8bb98c485")
                 .addHeader("Accept" ,"application/json").build();
 
+        Message message = new Message();
+        message.what = CryptoViewHandler.SET_PROGRESS;
+        message.obj = 0.5f;
+        handler.sendMessage(message);
+
         okHttpClient.newCall(request).enqueue(new Callback() {
 
             @Override
@@ -73,17 +78,20 @@ public class Loader {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull final Response response) throws IOException {
+                Message message = new Message();
+                message.what = CryptoViewHandler.SET_PROGRESS;
+                message.obj = 0.8f;
+                handler.sendMessage(message);
 
                 if (! response.isSuccessful())
                     throw new IOException("Unsuccessful " + response);
                 Log.v("LOAD-COINS", "Successful " + response);
 
                 try {
-
                     String body = response.body().string();
                     ArrayList<Crypto> coins = extractCoins(body);
 
-                    Message message = new Message();
+                    message = new Message();
                     message.what = CryptoViewHandler.LOAD_DONE;
                     message.obj = coins;
                     handler.sendMessage(message);
@@ -91,17 +99,14 @@ public class Loader {
                     if (!threadController.isPoolFull()) {
                         threadController.submitTask(() -> updateCache(body, start));
                     }
-
                 } catch (Exception e) {
                     Log.v("LOAD-COINS", e.getMessage());
                 }
-
             }
         });
     }
 
     private void loadFromCache(int start) {
-
         if (context == null)
             return;
 
@@ -109,13 +114,18 @@ public class Loader {
         try {
             FileInputStream inputStream = context.get().openFileInput(cacheFile.getPath());
             String body = readFile(inputStream);
-            ArrayList<Crypto> coins = extractCoins(body);
 
             Message message = new Message();
+            message.what = CryptoViewHandler.SET_PROGRESS;
+            message.obj = 0.7f;
+            handler.sendMessage(message);
+
+            ArrayList<Crypto> coins = extractCoins(body);
+
+            message = new Message();
             message.what = CryptoViewHandler.LOAD_DONE;
             message.obj = coins;
             handler.sendMessage(message);
-
         } catch (Exception e) {
             Log.i("LOAD-CACHE", e.getMessage());
             e.printStackTrace();
@@ -124,7 +134,6 @@ public class Loader {
     }
 
     private void updateCache(String body, int start) {
-
         if (context == null)
             return;
 
