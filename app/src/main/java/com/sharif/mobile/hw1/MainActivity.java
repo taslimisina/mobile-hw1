@@ -71,8 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(() -> {
-            if (loader.isBusy())
+            if (loader.isBusy()) {
+                Log.d("Main", "loader is busy");
+                swipeContainer.setRefreshing(false);
                 return;
+            }
             loader.setBusy();
             Log.v("Main", "Refresh");
             progressBar.setVisibility(ProgressBar.VISIBLE);
