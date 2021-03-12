@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     public CryptoViewAdapter cryptoViewAdapter;
     public SwipeRefreshLayout swipeContainer;
 
-    private CryptoViewHandler handler;
+//    private CryptoViewHandler handler;
     private RecyclerView recyclerView;
 
     public void showCandleChart(View view) {
@@ -83,5 +83,24 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //
 //        handler.sendEmptyMessage(CryptoViewHandler.INIT_COINS);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (!recyclerView.canScrollVertically(1)) {
+                    Log.v("Main", "Load More Coins");
+                    Loader.getInstance().loadMoreCoins();
+                }
+            }
+        });
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Loader.getInstance().refreshCoins();
+            }
+        });
     }
 }
