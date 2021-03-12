@@ -92,7 +92,7 @@ public class Loader {
                     ArrayList<Crypto> coins = extractCoins(body);
 
                     message = new Message();
-                    message.what = CryptoViewHandler.LOAD_DONE;
+                    message.what = start == 1 ? CryptoViewHandler.REFRESH_DONE : CryptoViewHandler.LOAD_DONE;
                     message.obj = coins;
                     handler.sendMessage(message);
 
